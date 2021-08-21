@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>305</width>
+    <height>422</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QWidget#Form{
+background-color: rgba(72, 72, 72, 60);
+border: 2px solid black; 
+border-radius: 30px;}</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout" stretch="1,5,1,1,2">
+   <item>
+    <widget class="QLabel" name="dateLabel">
+     <property name="styleSheet">
+      <string notr="true">font: 12pt &quot;Franklin Gothic Medium&quot;;
+color: black;</string>
+     </property>
+     <property name="text">
+      <string>Date and time</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,4,1">
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QWidget" name="imageWidget" native="true"/>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QLabel" name="temperatureLabel">
+     <property name="styleSheet">
+      <string notr="true">font: 10pt &quot;Franklin Gothic Medium&quot;;
+color: black;</string>
+     </property>
+     <property name="text">
+      <string>Temperature</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="precipitationLabel">
+     <property name="styleSheet">
+      <string notr="true">font: 10pt &quot;Franklin Gothic Medium&quot;;
+color: black;</string>
+     </property>
+     <property name="text">
+      <string>Precipitation chance</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QVBoxLayout" name="verticalLayout_2">
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_5">
+       <item>
+        <widget class="QLabel" name="windSpeedLabel">
+         <property name="styleSheet">
+          <string notr="true">font: 9pt &quot;Franklin Gothic Medium&quot;;
+color: black;</string>
+         </property>
+         <property name="text">
+          <string>Wind speed: </string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="windDirectionLabel">
+         <property name="styleSheet">
+          <string notr="true">font: 9pt &quot;Franklin Gothic Medium&quot;;
+color: black;</string>
+         </property>
+         <property name="text">
+          <string>Wind direction: </string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <item>
+        <widget class="QLabel" name="pressureLabel">
+         <property name="styleSheet">
+          <string notr="true">font: 9pt &quot;Franklin Gothic Medium&quot;;
+color: black;</string>
+         </property>
+         <property name="text">
+          <string>Pressure: </string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="humidityLabel">
+         <property name="styleSheet">
+          <string notr="true">font: 9pt &quot;Franklin Gothic Medium&quot;;
+color: black;</string>
+         </property>
+         <property name="text">
+          <string>Humidity: </string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
