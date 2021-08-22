@@ -4,8 +4,6 @@ import pandas as pd
 import requests
 from requests.exceptions import HTTPError
 
-from domain.weather_measurement import WeatherMeasurement
-
 
 class OpenWeatherForecast:
     def __init__(self, city='London'):
@@ -19,6 +17,11 @@ class OpenWeatherForecast:
         self.__request_data(city)
 
     def __request_data(self, city='London'):
+        """
+        Request data from OpenWeatherMap and updates the internal dataframe
+        :param city: City from which the weather data is retrieved
+        :return: Nothing
+        """
 
         data_request = None
 
@@ -54,11 +57,21 @@ class OpenWeatherForecast:
         self.__dataframe['dt'] = pd.to_datetime(self.__dataframe['dt'])
 
     def update_city(self, city):
+        """
+        Updates the dataframe with weather data of the new given city
+        :param city: City name (str)
+        :return: Nothing
+        """
         if city is None:
             raise Exception("City is none")
         self.__request_data(city)
 
     def get_date_data(self, date):
+        """
+        Gets the data for a certain date from the dataframe
+        :param date: Date (str format, dd-mm-yyyy)
+        :return: Dataframe with weather data for the given date
+        """
         # Get the rows with the given date
         sub_frame = self.__dataframe[self.__dataframe['dt'].dt.date == pd.to_datetime(date).date()]
         if sub_frame.empty:
@@ -77,13 +90,24 @@ class OpenWeatherForecast:
         return median_frame
 
     def get_hour_measurement(self, index):
+        """
+        Gets the weather data for the given index in the dataframe (hourly measurement)
+        :param index: Index in the dataframe (int)
+        :return: Dataframe row with the given index
+        """
         row_data = self.__dataframe.iloc[index].copy()
         row_data_frame = row_data.to_frame().T
         row_data_frame['date'] = pd.to_datetime(row_data_frame['dt'])
         return row_data_frame
 
     def get_number_of_measurements(self):
+        """
+        :return: Returns how many measurements are in the dataframe
+        """
         return self.__dataframe.shape[0]
 
     def get_days_of_measurements(self):
+        """
+        :return: Returns how many different days are measured in the dataframe
+        """
         return len(pd.unique(self.__dataframe['dt'].dt.date))

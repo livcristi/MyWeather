@@ -406,7 +406,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
 
     @pyqtSlot()
     def forward_days(self):
-        days_data = self.__weather_service.forward_day()
+        days_data = self.__weather_service.update_indexer('day', 1)
         if days_data:
             self.dayWeatherWidget2.update_data(days_data[0])
             self.dayWeatherWidget3.update_data(days_data[1])
@@ -414,7 +414,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
 
     @pyqtSlot()
     def backward_days(self):
-        days_data = self.__weather_service.backward_day()
+        days_data = self.__weather_service.update_indexer('day', -1)
         if days_data:
             self.dayWeatherWidget2.update_data(days_data[0])
             self.dayWeatherWidget3.update_data(days_data[1])
@@ -422,7 +422,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
 
     @pyqtSlot()
     def forward_hours(self):
-        hours_data = self.__weather_service.forward_hour()
+        hours_data = self.__weather_service.update_indexer('hour', 1)
         if hours_data:
             self.hourWeatherWidget2.update_data(hours_data[0], is_day=False)
             self.hourWeatherWidget3.update_data(hours_data[1], is_day=False)
@@ -430,7 +430,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
 
     @pyqtSlot()
     def backward_hours(self):
-        hours_data = self.__weather_service.backward_hour()
+        hours_data = self.__weather_service.update_indexer('hour', -1)
         if hours_data:
             self.hourWeatherWidget2.update_data(hours_data[0], is_day=False)
             self.hourWeatherWidget3.update_data(hours_data[1], is_day=False)

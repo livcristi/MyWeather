@@ -127,3 +127,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# UI app stuff
+*.ui
+day_widget.py
