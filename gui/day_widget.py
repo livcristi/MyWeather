@@ -170,10 +170,22 @@ class WeatherWidget(QFrame, Ui_Form):
         self.temperatureLabel.setText(str(math.ceil(weather_measurement.temperature_min)) + "°C - " +
                                       str(math.ceil(weather_measurement.temperature_max)) + "°C")
         self.precipitationLabel.setText(str(int(weather_measurement.precipitation_chance * 100)) + " % Rain chance")
-        self.pressureLabel.setText(str(math.floor(weather_measurement.pressure)) + " mb Press.")
-        self.humidityLabel.setText(str(math.floor(weather_measurement.humidity)) + "% Hum.")
-        self.windSpeedLabel.setText("Wind: " + str(round(weather_measurement.wind_speed, 2)) + "m/s")
-        self.windDirectionLabel.setText(str(math.floor(weather_measurement.wind_dir)) + "° dir.")
+        if weather_measurement.pressure:
+            self.pressureLabel.setText(str(math.floor(weather_measurement.pressure)) + " mb Press.")
+        else:
+            self.pressureLabel.setText("")
+        if weather_measurement.humidity:
+            self.humidityLabel.setText(str(math.floor(weather_measurement.humidity)) + "% Hum.")
+        else:
+            self.humidityLabel.setText("")
+        if weather_measurement.wind_speed:
+            self.windSpeedLabel.setText("Wind: " + str(round(weather_measurement.wind_speed, 2)) + "m/s")
+        else:
+            self.windSpeedLabel.setText("")
+        if weather_measurement.wind_dir:
+            self.windDirectionLabel.setText(str(math.floor(weather_measurement.wind_dir)) + "° dir.")
+        else:
+            self.windDirectionLabel.setText("")
 
         # Gets the description from the measurement and updates the image mostly related to it
         description = weather_measurement.description
@@ -181,7 +193,7 @@ class WeatherWidget(QFrame, Ui_Form):
         if 'few clouds' in description:
             cloud_image = QPixmap("./data/icons/cloud-sunny.png")
             self.imageWidget.setPixmap(cloud_image)
-        if 'cloud' in description:
+        elif 'cloud' in description:
             cloud_image = QPixmap("./data/icons/cloudy.png")
             self.imageWidget.setPixmap(cloud_image)
         elif 'rain' in description:

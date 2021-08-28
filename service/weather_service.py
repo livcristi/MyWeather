@@ -42,6 +42,9 @@ class WeatherService:
         """
         try:
             self.__weather_forecaster.update_city(city_name)
+            city_data = self.__weather_forecaster.get_city_data()
+            self.__weather_predictor.update_location(city_data['country'], city_data['latitude'],
+                                                     city_data['longitude'])
             self.city_name = city_name
         except Exception:
             print('Some error occured')
@@ -59,6 +62,35 @@ class WeatherService:
         beginning with a difference of day_index days
         """
         # the list of Measurements taken from the weather forecaster
+        if self.__indexer.day_index == 4:
+            days_data = [
+                WeatherMeasurement(
+                    self.__weather_forecaster.get_date_data(
+                        (datetime.today() + timedelta(days=4)).strftime('%Y-%m-%d'))
+                ),
+                WeatherMeasurement(
+                    self.__weather_forecaster.get_date_data(
+                        (datetime.today() + timedelta(days=5)).strftime('%Y-%m-%d'))
+                ),
+                WeatherMeasurement(
+                    self.__weather_predictor.get_prediction()
+                )
+            ]
+            return days_data
+        elif self.__indexer.day_index == 5:
+            days_data = [
+                WeatherMeasurement(
+                    self.__weather_forecaster.get_date_data(
+                        (datetime.today() + timedelta(days=5)).strftime('%Y-%m-%d'))
+                ),
+                WeatherMeasurement(
+                    self.__weather_predictor.get_prediction()
+                ),
+                WeatherMeasurement(
+                    self.__weather_predictor.get_prediction(1)
+                )
+            ]
+            return days_data
         days_data = [WeatherMeasurement(
             self.__weather_forecaster.get_date_data(
                 (datetime.today() + timedelta(days=(self.__indexer.day_index + difference))).strftime('%Y-%m-%d'))
@@ -89,13 +121,14 @@ class WeatherService:
         :return: The updated measurements or None, if the amount or indexer type are invalid
         """
         if indexer_type == 'day':
-            if self.__indexer.update_indexer(indexer_type, amount, self.__weather_forecaster.get_days_of_measurements()):
+            if self.__indexer.update_indexer(indexer_type, amount,
+                                             self.__weather_forecaster.get_days_of_measurements() + 2):
                 return self.get_next_days_weather()
             else:
                 return None
         else:
-            if self.__indexer.update_indexer(indexer_type, amount, self.__weather_forecaster.get_number_of_measurements()):
+            if self.__indexer.update_indexer(indexer_type, amount,
+                                             self.__weather_forecaster.get_number_of_measurements()):
                 return self.get_next_hours_weather()
             else:
                 return None
-

@@ -1,20 +1,18 @@
-from pprint import pprint
-
 import pandas as pd
 import requests
 from requests.exceptions import HTTPError
 
 
 class OpenWeatherForecast:
-    def __init__(self, city='London'):
+    def __init__(self):
         # Read the encrypted api key from the file, decrypt it and save it
-        filename = './data/api_data/api_key.txt'
+        filename = './data/api_data/open_weather_api_key.txt'
         with open(filename, 'r') as api_file:
             api_key_encrypted = api_file.readline().strip()
         api_key = ''.join(list(map(lambda x: chr(ord(x) - 7) if x.isalpha() else x, api_key_encrypted)))
         self.__api_key = api_key      # Init the api key
         self.__dataframe = None       # Init the weather dataframe
-        self.__request_data(city)
+        self.__city_data = None
 
     def __request_data(self, city='London'):
         """
@@ -55,6 +53,10 @@ class OpenWeatherForecast:
 
         self.__dataframe = pd.DataFrame(forecast_data)
         self.__dataframe['dt'] = pd.to_datetime(self.__dataframe['dt'])
+        self.__city_data = {"city": data_request.json()['city']['name'],
+                            "country": data_request.json()['city']['country'],
+                            "latitude": data_request.json()['city']['coord']['lat'],
+                            "longitude": data_request.json()['city']['coord']['lon']}
 
     def update_city(self, city):
         """
@@ -72,6 +74,9 @@ class OpenWeatherForecast:
         :param date: Date (str format, dd-mm-yyyy)
         :return: Dataframe with weather data for the given date
         """
+        # Lazy init
+        if self.__dataframe is None:
+            self.__request_data()
         # Get the rows with the given date
         sub_frame = self.__dataframe[self.__dataframe['dt'].dt.date == pd.to_datetime(date).date()]
         if sub_frame.empty:
@@ -95,6 +100,9 @@ class OpenWeatherForecast:
         :param index: Index in the dataframe (int)
         :return: Dataframe row with the given index
         """
+        # Lazy init
+        if self.__dataframe is None:
+            self.__request_data()
         row_data = self.__dataframe.iloc[index].copy()
         row_data_frame = row_data.to_frame().T
         row_data_frame['date'] = pd.to_datetime(row_data_frame['dt'])
@@ -104,10 +112,19 @@ class OpenWeatherForecast:
         """
         :return: Returns how many measurements are in the dataframe
         """
+        # Lazy init
+        if self.__dataframe is None:
+            self.__request_data()
         return self.__dataframe.shape[0]
 
     def get_days_of_measurements(self):
         """
         :return: Returns how many different days are measured in the dataframe
         """
+        # Lazy init
+        if self.__dataframe is None:
+            self.__request_data()
         return len(pd.unique(self.__dataframe['dt'].dt.date))
+
+    def get_city_data(self):
+        return self.__city_data

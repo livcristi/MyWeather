@@ -34,7 +34,7 @@ class WeatherWidgetIndexer:
             raise Exception('Amount is invalid')
         return self.__indexer_methods[indexer_type][amount](limit)
 
-    def __forward_day(self, day_limit=5):
+    def __forward_day(self, day_limit=7):
         if self.__day_index + 3 >= day_limit:
             return False
         else:

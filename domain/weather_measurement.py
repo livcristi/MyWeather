@@ -28,11 +28,11 @@ class WeatherMeasurement:
 
     @property
     def day(self):
-        return pd.to_datetime(str( self.row_data['date'].values[0])).strftime('%d-%m-%Y')
+        return pd.to_datetime(str(self.row_data['date'].values[0])).strftime('%d-%m-%Y')
 
     @property
     def time(self):
-        return pd.to_datetime(str( self.row_data['date'].values[0])).strftime("%H:%M")
+        return pd.to_datetime(str(self.row_data['date'].values[0])).strftime("%H:%M")
 
     @property
     def description(self):
