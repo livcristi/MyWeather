@@ -173,19 +173,19 @@ class WeatherWidget(QFrame, Ui_Form):
         if weather_measurement.pressure:
             self.pressureLabel.setText(str(math.floor(weather_measurement.pressure)) + " mb Press.")
         else:
-            self.pressureLabel.setText("")
+            self.pressureLabel.setText("                     ")
         if weather_measurement.humidity:
             self.humidityLabel.setText(str(math.floor(weather_measurement.humidity)) + "% Hum.")
         else:
-            self.humidityLabel.setText("")
+            self.humidityLabel.setText("                     ")
         if weather_measurement.wind_speed:
             self.windSpeedLabel.setText("Wind: " + str(round(weather_measurement.wind_speed, 2)) + "m/s")
         else:
-            self.windSpeedLabel.setText("")
+            self.windSpeedLabel.setText("                     ")
         if weather_measurement.wind_dir:
             self.windDirectionLabel.setText(str(math.floor(weather_measurement.wind_dir)) + "° dir.")
         else:
-            self.windDirectionLabel.setText("")
+            self.windDirectionLabel.setText("                      ")
 
         # Gets the description from the measurement and updates the image mostly related to it
         description = weather_measurement.description

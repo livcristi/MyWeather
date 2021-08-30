@@ -61,3 +61,6 @@ class WeatherWidgetIndexer:
         else:
             self.__hour_index -= 1
             return True
+
+    def reset_indexer(self):
+        self.__day_index = self.__hour_index = 1

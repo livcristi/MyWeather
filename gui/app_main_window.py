@@ -3,11 +3,22 @@ from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtGui import QPixmap, QIcon
 from PyQt5.QtWidgets import QMainWindow
 
-from gui.day_widget import WeatherWidget
+from gui.weather_widget import WeatherWidget
+
+"""
+    Module for the main window GUI. The GUI consists of a stacked widget with two parts: the part for daily weather
+    forecasts and one for hourly forecasts. Each one contains multiple weather widgets and the data can be scrolled
+    using two side buttons (for back and forward)
+"""
 
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
+        """
+        Initialises the main window design (This was automatically generated using the pyuic5 library)
+        :param MainWindow: QT Designer object
+        :return: Nothing
+        """
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(872, 519)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
@@ -366,12 +377,18 @@ class Ui_MainWindow(object):
 
 class MyMainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self, weather_service, parent=None):
+        """
+        Initializes the main window
+        :param weather_service: Weather Service of the app
+        :param parent: Parent widget
+        """
         super(MyMainWindow, self).__init__(parent)
         self.setupUi(self)
         self.setWindowTitle("MyWeather")
         self.setWindowIcon(QIcon("./data/icons/cloud-sunny.png"))
         self.__weather_service = weather_service
 
+        # Update the weather widgets using the service data
         self.weatherToday.update_data(self.__weather_service.get_today_weather())
 
         days_data = self.__weather_service.get_next_days_weather()
@@ -392,11 +409,19 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         self.connect_signals_and_slots()
 
     def connect_signals_and_slots(self):
+        """
+        Connect the backward and forward buttons with the signals below
+        :return: Nothing
+        """
         self.forwardButton.clicked.connect(self.forward_days)
         self.backwardButton.clicked.connect(self.backward_days)
         self.submitCityButton.clicked.connect(self.update_city)
         self.forwardHourButton.clicked.connect(self.forward_hours)
         self.backwardHourButton.clicked.connect(self.backward_hours)
+
+    """
+        Next slots are used when the user presses the backward and forward buttons
+    """
 
     @pyqtSlot()
     def forward_days(self):
@@ -432,7 +457,12 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
 
     @pyqtSlot()
     def update_city(self):
-        city_name = self.cityInputEdit.text()
+        """
+        Updates the city from which the forecasts are
+        :return: Nothing
+        """
+        # Gets the user input and update the service and widgets
+        city_name = self.cityInputEdit.text().strip()
         if len(city_name) >= 2:
             self.__weather_service.update_city(city_name)
             # Update widgets
@@ -448,5 +478,5 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
             self.hourWeatherWidget3.update_data(hours_data[1], is_day=False)
             self.hourWeatherWidget4.update_data(hours_data[2], is_day=False)
 
-            self.cityLabel.setText('City: ' + self.__weather_service.get_city_name())
-            self.hourCityLabel.setText('City: ' + self.__weather_service.get_city_name())
+            self.cityLabel.setText('City: ' + city_name)
+            self.hourCityLabel.setText('City: ' + city_name)

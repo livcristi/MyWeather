@@ -1,9 +1,13 @@
+import datetime
+
 import pandas as pd
 import requests
 from requests.exceptions import HTTPError
 
+from weather_data_getter.weather_forecaster import WeatherForecaster
 
-class OpenWeatherForecast:
+
+class OpenWeatherForecast(WeatherForecaster):
     def __init__(self):
         # Read the encrypted api key from the file, decrypt it and save it
         filename = './data/api_data/open_weather_api_key.txt'
@@ -14,18 +18,44 @@ class OpenWeatherForecast:
         self.__dataframe = None       # Init the weather dataframe
         self.__city_data = None
 
-    def __request_data(self, city='London'):
+    def get_daily_forecasts(self):
+        """
+        Gets daily forecast for the next 5 days and returns it as a dataframe
+        :return: Pandas dataframe containing weather forecast data
+        """
+        today_date = datetime.datetime.today()
+        forecast_data = [self.__get_date_data((today_date + datetime.timedelta(days=diff)).strftime('%Y-%m-%d'))
+                         for diff in range(6)]
+        return pd.concat(forecast_data)
+
+    def get_hourly_forecasts(self):
+        """
+        Gets hourly weather forecasts as a dataframe
+        :return: Pandas dataframe containing hourly weather forecasts
+        """
+        return self.__dataframe
+
+    def update_location(self, location_data):
+        """
+        Updates the location of the weather predictor, meaning: It tries to get the data from openWeather for the
+        given city of the location
+        :param location_data: Dictionary which contains the fields: "country", "name", "latitude", "longitude"
+        :return: Nothing
+        """
+        if location_data['city'] is None:
+            raise Exception("City is none")
+        self.__request_data(location_data['city'])
+
+    def __request_data(self, city):
         """
         Request data from OpenWeatherMap and updates the internal dataframe
         :param city: City from which the weather data is retrieved
         :return: Nothing
         """
-
         data_request = None
-
         try:
             # Request weather forecast JSON from open weather API
-            data_request = requests.get('http://api.openweathermap.org/data/2.5/forecast?units=metric&q=' + city +
+            data_request = requests.get('https://api.openweathermap.org/data/2.5/forecast?units=metric&q=' + city +
                                         '&APPID=' + self.__api_key)
             if data_request.json()['cod'] != '200' or data_request is None:
                 raise Exception("Internet connection error")
@@ -34,12 +64,12 @@ class OpenWeatherForecast:
         except Exception as err:
             print(f'Other error occurred: {err}')
 
-        # Convert the needed data from JSON into a pandas dataframe
+        # Convert the needed data from JSON to a pandas dataframe
         forecast_data = list()
         for measurement in data_request.json()['list']:
             measurement_data = dict()
             measurement_data['city'] = city
-            measurement_data['dt'] = measurement['dt_txt']
+            measurement_data['date'] = measurement['dt_txt']
             measurement_data['temperature'] = measurement['main']['temp']
             measurement_data['temperature_min'] = measurement['main']['temp_min']
             measurement_data['temperature_max'] = measurement['main']['temp_max']
@@ -52,38 +82,28 @@ class OpenWeatherForecast:
             forecast_data.append(measurement_data)
 
         self.__dataframe = pd.DataFrame(forecast_data)
-        self.__dataframe['dt'] = pd.to_datetime(self.__dataframe['dt'])
+        self.__dataframe['date'] = pd.to_datetime(self.__dataframe['date'])
         self.__city_data = {"city": data_request.json()['city']['name'],
                             "country": data_request.json()['city']['country'],
                             "latitude": data_request.json()['city']['coord']['lat'],
                             "longitude": data_request.json()['city']['coord']['lon']}
 
-    def update_city(self, city):
-        """
-        Updates the dataframe with weather data of the new given city
-        :param city: City name (str)
-        :return: Nothing
-        """
-        if city is None:
-            raise Exception("City is none")
-        self.__request_data(city)
-
-    def get_date_data(self, date):
+    def __get_date_data(self, date):
         """
         Gets the data for a certain date from the dataframe
         :param date: Date (str format, dd-mm-yyyy)
         :return: Dataframe with weather data for the given date
         """
-        # Lazy init
         if self.__dataframe is None:
-            self.__request_data()
+            # print(self.__dataframe)
+            raise Exception("Cannot read the data")
         # Get the rows with the given date
-        sub_frame = self.__dataframe[self.__dataframe['dt'].dt.date == pd.to_datetime(date).date()]
+        sub_frame = self.__dataframe[self.__dataframe['date'].dt.date == pd.to_datetime(date).date()]
         if sub_frame.empty:
             return None
         # Get the mean values of the day
         median_series = sub_frame.drop(
-            columns=['city', 'dt', 'description', 'temperature_max', 'temperature_min']).mean(axis=0)
+            columns=['city', 'date', 'description', 'temperature_max', 'temperature_min']).mean(axis=0)
         # Add the string columns (most frequent values per column)
         median_series['temperature_min'] = sub_frame['temperature_min'].min()
         median_series['temperature_max'] = sub_frame['temperature_max'].max()
@@ -93,38 +113,3 @@ class OpenWeatherForecast:
         # Convert the Series to a Dataframe and return it
         median_frame = median_series.to_frame().T
         return median_frame
-
-    def get_hour_measurement(self, index):
-        """
-        Gets the weather data for the given index in the dataframe (hourly measurement)
-        :param index: Index in the dataframe (int)
-        :return: Dataframe row with the given index
-        """
-        # Lazy init
-        if self.__dataframe is None:
-            self.__request_data()
-        row_data = self.__dataframe.iloc[index].copy()
-        row_data_frame = row_data.to_frame().T
-        row_data_frame['date'] = pd.to_datetime(row_data_frame['dt'])
-        return row_data_frame
-
-    def get_number_of_measurements(self):
-        """
-        :return: Returns how many measurements are in the dataframe
-        """
-        # Lazy init
-        if self.__dataframe is None:
-            self.__request_data()
-        return self.__dataframe.shape[0]
-
-    def get_days_of_measurements(self):
-        """
-        :return: Returns how many different days are measured in the dataframe
-        """
-        # Lazy init
-        if self.__dataframe is None:
-            self.__request_data()
-        return len(pd.unique(self.__dataframe['dt'].dt.date))
-
-    def get_city_data(self):
-        return self.__city_data
